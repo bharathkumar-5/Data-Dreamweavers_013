@@ -3,13 +3,29 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { FileCode } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
-import { auth, signInWithEmailAndPassword } from "../js/firebase"; // Import Firebase auth functions
+import { useAuth } from "../auth/AuthContext"; // Import AuthContext
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 const LoginPage = () => {
   const canvasRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // Access login method from context
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -63,124 +79,110 @@ const LoginPage = () => {
     };
   }, []);
 
-  // Function to handle login form submission with Firebase
   const handleLogin = async (e) => {
     e.preventDefault();
+    // Here you can implement Firebase login if needed
+  };
 
-    try {
-      // Sign in with Firebase authentication
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Login successful!"); // Success toast
-      // Navigate to the dashboard or another page on successful login
-      setTimeout(() => {
-        navigate("/"); // Example route after login
-      }, 2000);
-    } catch (error) {
-      if (error.code === "auth/wrong-password") {
-        toast.error("Password is incorrect"); // Error toast for incorrect password
-      } else if (error.code === "auth/user-not-found") {
-        toast.error("User not found"); // Error toast for user not found
-      } else {
-        toast.error("An error occurred. Please try again."); // Generic error toast
-      }
-      console.error("Error:", error);
-    }
+  // Google login success handler
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    const credentialResponseDecoded = jwtDecode(credentialResponse.credential);
+    const userData = {
+      name: credentialResponseDecoded.name,
+      email: credentialResponseDecoded.email,
+      imageUrl: credentialResponseDecoded.picture,
+    };
+    login(userData); // Set user data in context
+    toast.success("Login Success");
+    navigate("/"); // Navigate to home page after login
+  };
+
+  // Google login error handler
+  const handleGoogleLoginError = () => {
+    toast.error("Google Login Failed");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative overflow-hidden p-4">
-      <Toaster position="top-right" reverseOrder={false} />{" "}
-      <canvas ref={canvasRef} className="absolute inset-0" />
+    <Flex
+      minH="100vh"
+      align="center"
+      justify="center"
+      bg={useColorModeValue("gray.50", "gray.800")}
+      position="relative"
+      overflow="hidden"
+    >
+      <Toaster position="top-right" />
+      <canvas ref={canvasRef} style={{ position: "absolute", inset: 0 }} />
       <motion.div
-        className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md relative z-10"
+        className="relative z-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <motion.div
-          className="flex flex-col items-center justify-center mb-6 sm:mb-8"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{
-            delay: 0.2,
-            type: "spring",
-            stiffness: 260,
-            damping: 20,
-          }}
+        <Stack
+          spacing={6}
+          bg={useColorModeValue("white", "gray.700")}
+          rounded="lg"
+          boxShadow="lg"
+          p={8}
+          w="full"
+          maxW="md"
         >
-          <FileCode className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
-          <h1 className="text-2xl sm:text-3xl font-bold mt-4 text-primary text-center">
-            Welcome to WebCraft
-          </h1>
-        </motion.div>
-        <motion.p
-          className="text-center text-black mb-6 sm:mb-8 text-sm sm:text-base"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          Your website building journey begins here
-        </motion.p>
-        <motion.form
-          className="space-y-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          onSubmit={handleLogin} 
-        >
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} 
-          />
-          <button
-            type="submit"
-            className="w-full bg-primary text-black px-4 py-2 rounded border border-slate-950 text-base sm:text-xl transition-all duration-300 hover:bg-black hover:text-white"
+          <Center>
+            <FileCode size={40} color="#3182CE" />
+          </Center>
+          <Heading
+            fontSize="2xl"
+            textAlign="center"
+            color={useColorModeValue("gray.800", "white")}
           >
-            Sign In
-          </button>
-        </motion.form>
-        <motion.div
-          className="mt-6 sm:mt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <p className="text-xs sm:text-sm text-black">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline">
-              Register
-            </Link>
-          </p>
-        </motion.div>
-        <motion.div
-          className="mt-6 sm:mt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <p className="text-xs sm:text-sm text-black">
-          By proceeding, you agree to WebCraft{" "}
-            <Link to="/terms" className="text-primary hover:underline">
-            Terms and Conditions
-            </Link>{" "}
-            and{" "}
-            <Link to="/privacy" className="text-primary hover:underline">
-              Privacy Policy
-            </Link>
-          </p>
-        </motion.div>
+            Welcome Back
+          </Heading>
+          <Text
+            textAlign="center"
+            color={useColorModeValue("gray.600", "gray.300")}
+          >
+            Sign in to access your account
+          </Text>
+          <form onSubmit={handleLogin}>
+            <Stack spacing={4}>
+              <FormControl id="email" isRequired>
+                <FormLabel>Email address</FormLabel>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </FormControl>
+              <FormControl id="password" isRequired>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormControl>
+              <Button
+                colorScheme="blue"
+                type="submit"
+                size="lg"
+                fontSize="md"
+                w="full"
+              >
+                Login
+              </Button>
+            </Stack>
+          </form>
+
+          <Center>
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginError}
+            />
+          </Center>
+        </Stack>
       </motion.div>
-    </div>
+    </Flex>
   );
 };
 

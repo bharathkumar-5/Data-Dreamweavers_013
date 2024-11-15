@@ -3,13 +3,26 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { FileCode } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
-import { auth, createUserWithEmailAndPassword } from "../js/firebase"; // Import Firebase auth functions
+import { auth, createUserWithEmailAndPassword } from "../js/firebase";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 const RegisterPage = () => {
   const canvasRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Confirm password
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,120 +77,117 @@ const RegisterPage = () => {
     };
   }, []);
 
-  // Function to handle registration form submission with Firebase
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Check if password and confirm password match
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
 
     try {
-      // Create user with Firebase authentication
       await createUserWithEmailAndPassword(auth, email, password);
-      toast.success("Registration successful!"); // Success toast
-      // Navigate to the dashboard or another page on successful registration
+      toast.success("Registration successful!");
       setTimeout(() => {
-        navigate("/login"); // Example route after registration
+        navigate("/login");
       }, 2000);
     } catch (error) {
       if (error.code === "auth/weak-password") {
-        toast.error("Password is too weak!"); // Error toast for weak password
+        toast.error("Password is too weak!");
       } else if (error.code === "auth/email-already-in-use") {
-        toast.error("Email already in use!"); // Error toast for existing user
+        toast.error("Email already in use!");
       } else {
-        toast.error("An error occurred. Please try again."); // Generic error toast
+        toast.error("An error occurred. Please try again.");
       }
       console.error("Error:", error);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative overflow-hidden p-4">
-      <Toaster position="top-right" reverseOrder={false} /> {/* Add toaster component */}
-      <canvas ref={canvasRef} className="absolute inset-0" />
+    <Flex
+      minH="100vh"
+      align="center"
+      justify="center"
+      bg={useColorModeValue("gray.50", "gray.800")}
+      position="relative"
+      overflow="hidden"
+    >
+      <Toaster position="top-right" />
+      <canvas ref={canvasRef} style={{ position: "absolute", inset: 0 }} />
       <motion.div
-        className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md relative z-10"
+        className="relative z-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <motion.div
-          className="flex flex-col items-center justify-center mb-6 sm:mb-8"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{
-            delay: 0.2,
-            type: "spring",
-            stiffness: 260,
-            damping: 20,
-          }}
+        <Stack
+          spacing={6}
+          bg={useColorModeValue("white", "gray.700")}
+          rounded="lg"
+          boxShadow="lg"
+          p={8}
+          w="full"
+          maxW="md"
         >
-          <FileCode className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
-          <h1 className="text-2xl sm:text-3xl font-bold mt-4 text-primary text-center">
-            Join WebCraft
-          </h1>
-        </motion.div>
-        <motion.p
-          className="text-center text-black mb-6 sm:mb-8 text-sm sm:text-base"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          Create your account to start collaborating
-        </motion.p>
-        <motion.form
-          className="space-y-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          onSubmit={handleRegister} // Submit form handler for registration
-        >
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} // Update state
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} // Update state
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)} // Update confirm password state
-          />
-          <button
-            type="submit"
-            className="w-full bg-primary text-black px-4 py-2 rounded border border-slate-950 text-base sm:text-xl transition-all duration-300 hover:bg-black hover:text-white"
+          <Center>
+            <FileCode size={40} color="#3182CE" />
+          </Center>
+          <Heading
+            fontSize="2xl"
+            textAlign="center"
+            color={useColorModeValue("gray.800", "white")}
           >
-            Register
-          </button>
-        </motion.form>
-        <motion.div
-          className="mt-6 sm:mt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <p className="text-xs sm:text-sm text-black">
+            Join WebCraft
+          </Heading>
+          <Text textAlign="center" color={useColorModeValue("gray.600", "gray.300")}>
+            Create your account to start collaborating
+          </Text>
+          <form onSubmit={handleRegister}>
+            <Stack spacing={4}>
+              <FormControl id="email" isRequired>
+                <FormLabel>Email address</FormLabel>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </FormControl>
+              <FormControl id="password" isRequired>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormControl>
+              <FormControl id="confirmPassword" isRequired>
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </FormControl>
+              <Button
+                colorScheme="blue"
+                type="submit"
+                size="lg"
+                fontSize="md"
+                w="full"
+              >
+                Register
+              </Button>
+            </Stack>
+          </form>
+          <Text textAlign="center" fontSize="sm" color="gray.600">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:underline">
+            <Link to="/login" style={{ color: "#3182CE" }}>
               Sign In
             </Link>
-          </p>
-        </motion.div>
+          </Text>
+        </Stack>
       </motion.div>
-    </div>
+    </Flex>
   );
 };
 

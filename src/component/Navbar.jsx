@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
-import { Globe, Menu, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { createPortal } from 'react-dom'
+import React, { useState } from 'react';
+import { Globe, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { useAuth } from "../auth/AuthContext"; // Import AuthContext
 
 const Button = ({ children, className, ...props }) => (
   <motion.button
@@ -13,7 +14,7 @@ const Button = ({ children, className, ...props }) => (
   >
     {children}
   </motion.button>
-)
+);
 
 const handleRedirect = () => {
   window.location.href = '/register';
@@ -26,10 +27,10 @@ const NavItem = ({ item }) => (
   >
     {item}
   </motion.div>
-)
+);
 
 const MobileMenu = ({ isOpen, onClose }) => {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return createPortal(
     <motion.div
@@ -45,30 +46,30 @@ const MobileMenu = ({ isOpen, onClose }) => {
         </button>
       </div>
       <nav className="flex flex-col items-center space-y-4">
-        {[
-          { name: 'About', path: '/about' },
+        {[{ name: 'About', path: '/about' },
           { name: 'Solutions', path: '/solutions' },
           { name: 'Contact', path: '/contact' },
           { name: 'Pricing', path: '/pricing' },
-          { name: 'Enterprise', path: '/enterprise' }
-        ].map((item) => (
-          <motion.div
-            key={item.name}
-            className="text-lg font-medium"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link to={item.path} onClick={onClose}>{item.name}</Link>
-          </motion.div>
-        ))}
+          { name: 'Enterprise', path: '/enterprise' }]
+          .map((item) => (
+            <motion.div
+              key={item.name}
+              className="text-lg font-medium"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link to={item.path} onClick={onClose}>{item.name}</Link>
+            </motion.div>
+          ))}
       </nav>
     </motion.div>,
     document.body
-  )
-}
+  );
+};
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { user, logout } = useAuth(); // Get user and logout function from context
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -93,30 +94,35 @@ const Navbar = () => {
             <NavItem item={<Link to="/pricing">Pricing</Link>} />
           </nav>
         </div>
+
         <div className="flex items-center space-x-4">
-          <motion.div className="hidden md:inline-flex items-center text-sm font-medium" whileHover={{ scale: 1.1 }}>
-            <Link to="/enterprise">Enterprise</Link>
-          </motion.div>
-          <Button className="hidden md:inline-flex items-center text-sm">
-            <Globe className="w-4 h-4 mr-2" />
-            EN
-          </Button>
-          <Button className="text-sm" onClick={handleRedirect}>
-            Log In
-          </Button>
-          <Button className="bg-gradient-to-br from-pink-500 to-yellow-300 p-8 rounded-lg shadow-2xl transform hover:scale-105 text-sm" onClick={handleRedirect}>
-            Get Started
-          </Button>
+          {user ? (
+            <>
+              <div className="text-sm font-medium">Hello, {user.name}</div>
+              <Button className="text-sm" onClick={logout}>Logout</Button>
+            </>
+          ) : (
+            <>
+              <Button className="hidden md:inline-flex items-center text-sm">
+                <Link to="/register">Sign Up</Link>
+              </Button>
+              <Button className="bg-gradient-to-br from-pink-500 to-yellow-300 p-8 rounded-lg shadow-2xl transform hover:scale-105 text-sm" onClick={handleRedirect}>
+                Get Started
+              </Button>
+            </>
+          )}
+
           <Button className="md:hidden" onClick={() => setIsMobileMenuOpen(true)}>
             <Menu className="w-6 h-6" />
           </Button>
         </div>
       </motion.header>
+
       <AnimatePresence>
         {isMobileMenuOpen && <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />}
       </AnimatePresence>
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
