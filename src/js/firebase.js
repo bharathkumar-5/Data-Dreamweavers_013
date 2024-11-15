@@ -1,16 +1,20 @@
 // src/firebase.js
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDExjNvgU-Nwode6WNJs4AF5sGdbS6okyA",
-    authDomain: "rct124-construct-week.firebaseapp.com",
-    projectId: "rct124-construct-week",
-    storageBucket: "rct124-construct-week.appspot.com",
-    messagingSenderId: "695573150996",
-    appId: "1:695573150996:web:547025eebc1ac6bd771601"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
-export { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword };
