@@ -105,12 +105,7 @@ const RegisterPage = () => {
 
   return (
     <Flex
-      minH="100vh"
-      align="center"
-      justify="center"
-      bg={useColorModeValue("gray.50", "gray.800")}
-      position="relative"
-      overflow="hidden"
+      className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative overflow-hidden p-4"
     >
       <Toaster position="top-right" />
       <canvas ref={canvasRef} style={{ position: "absolute", inset: 0 }} />

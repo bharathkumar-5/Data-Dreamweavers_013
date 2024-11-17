@@ -81,8 +81,26 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // Here you can implement Firebase login if needed
+
+    try {
+      // Sign in with Firebase authentication
+      toast.success("Login successful!"); // Success toast
+      // Navigate to the dashboard or another page on successful login
+      setTimeout(() => {
+        navigate("/"); // Example route after login
+      }, 2000);
+    } catch (error) {
+      if (error.code === "auth/wrong-password") {
+        toast.error("Password is incorrect"); // Error toast for incorrect password
+      } else if (error.code === "auth/user-not-found") {
+        toast.error("User not found"); // Error toast for user not found
+      } else {
+        toast.error("An error occurred. Please try again."); // Generic error toast
+      }
+      console.error("Error:", error);
+    }
   };
+
 
   // Google login success handler
   const handleGoogleLoginSuccess = (credentialResponse) => {
@@ -92,8 +110,9 @@ const LoginPage = () => {
       email: credentialResponseDecoded.email,
       imageUrl: credentialResponseDecoded.picture,
     };
+
     login(userData); // Set user data in context
-    toast.success("Login Success");
+    toast.success("Login Success!");
     navigate("/"); // Navigate to home page after login
   };
 
@@ -104,17 +123,12 @@ const LoginPage = () => {
 
   return (
     <Flex
-      minH="100vh"
-      align="center"
-      justify="center"
-      bg={useColorModeValue("gray.50", "gray.800")}
-      position="relative"
-      overflow="hidden"
+    className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative overflow-hidden p-4"
     >
       <Toaster position="top-right" />
       <canvas ref={canvasRef} style={{ position: "absolute", inset: 0 }} />
       <motion.div
-        className="relative z-10"
+        className="g-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md relative z-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -173,6 +187,12 @@ const LoginPage = () => {
               </Button>
             </Stack>
           </form>
+          <Text textAlign="center" fontSize="sm" color="gray.600">
+            Don't have an account?{" "}
+            <Link to="/register" style={{ color: "#3182CE" }}>
+              Register
+            </Link>
+          </Text>
 
           <Center>
             <GoogleLogin
