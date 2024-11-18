@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FileCode } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { auth, createUserWithEmailAndPassword } from "../js/firebase";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 import {
   Box,
   Button,
@@ -103,14 +105,30 @@ const RegisterPage = () => {
     }
   };
 
+  
+
+  // Google login success handler
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    const credentialResponseDecoded = jwtDecode(credentialResponse.credential);
+    const userData = {
+      name: credentialResponseDecoded.name,
+      email: credentialResponseDecoded.email,
+      imageUrl: credentialResponseDecoded.picture,
+    };
+    login(userData); // Set user data in context
+    toast.success("Login Success!");
+    navigate("/editor"); // Navigate to home page after login
+  };
+
+  // Google login error handler
+  const handleGoogleLoginError = () => {
+    toast.error("Google Login Failed");
+  };
+
+
   return (
     <Flex
-      minH="100vh"
-      align="center"
-      justify="center"
-      bg={useColorModeValue("gray.50", "gray.800")}
-      position="relative"
-      overflow="hidden"
+      className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative overflow-hidden p-4"
     >
       <Toaster position="top-right" />
       <canvas ref={canvasRef} style={{ position: "absolute", inset: 0 }} />
@@ -185,6 +203,14 @@ const RegisterPage = () => {
               Sign In
             </Link>
           </Text>
+
+          <Center>
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginError}
+            />
+          </Center>
+
         </Stack>
       </motion.div>
     </Flex>

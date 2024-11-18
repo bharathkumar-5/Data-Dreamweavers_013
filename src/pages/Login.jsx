@@ -100,7 +100,7 @@ const LoginPage = () => {
       imageUrl: credentialResponseDecoded.picture,
     };
     login(userData); // Set user data in context
-    toast.success("Login Success");
+    toast.success("Login Success!");
     navigate("/editor"); // Navigate to home page after login
   };
 
@@ -111,12 +111,7 @@ const LoginPage = () => {
 
   return (
     <Flex
-      minH="100vh"
-      align="center"
-      justify="center"
-      bg={useColorModeValue("gray.50", "gray.800")}
-      position="relative"
-      overflow="hidden"
+      className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative overflow-hidden p-4"
     >
       <Toaster position="top-right" />
       <canvas ref={canvasRef} style={{ position: "absolute", inset: 0 }} />
@@ -180,6 +175,13 @@ const LoginPage = () => {
               </Button>
             </Stack>
           </form>
+
+          <Text textAlign="center" fontSize="sm" color="gray.600">
+            Don't have an account?{" "}
+            <Link to="/register" style={{ color: "#3182CE" }}>
+              Register
+            </Link>
+          </Text>
 
           <Center>
             <GoogleLogin
