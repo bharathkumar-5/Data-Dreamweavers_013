@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function Homepage() {
   const Button = ({ children, className, ...props }) => (

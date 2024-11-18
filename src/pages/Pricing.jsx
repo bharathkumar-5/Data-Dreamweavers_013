@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // Custom Switch component (unchanged)
 const Switch = ({ checked, onChange }) => (

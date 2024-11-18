@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Phone, MapPin, Mail } from 'lucide-react'
-import Navbar from '../component/Navbar'
-import Footer from '../component/Footer'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 const InputField = ({ label, type, placeholder, value, onChange }) => (
   <div className="mb-4">

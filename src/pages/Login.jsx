@@ -82,6 +82,13 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     // Here you can implement Firebase login if needed
+    try {
+      await login(email, password);
+      toast.success("Login successful!");
+      navigate("/editor"); // Redirect to editor page after login
+    } catch (error) {
+      toast.error(error.message || "Failed to login!");
+    }
   };
 
   // Google login success handler
@@ -94,7 +101,7 @@ const LoginPage = () => {
     };
     login(userData); // Set user data in context
     toast.success("Login Success");
-    navigate("/"); // Navigate to home page after login
+    navigate("/editor"); // Navigate to home page after login
   };
 
   // Google login error handler
